@@ -1,95 +1,63 @@
-import Image from 'next/image'
-import styles from './page.module.css'
+"use client"
+
+import styles from "./page.module.css"
+import Image from "next/image"
+
+import { useRef, createRef, useState, useEffect, use } from "react"
+
+import Plane from "@/components/Plane"
+
+import img1 from "../../assets/img1.png"
+import img2 from "../../assets/img2.png"
+import img3 from "../../assets/img3.png"
+
+const imgs = [img1, img2, img3]
+
+const imgStyle = {
+  opacity: 0,
+  width: "100%",
+}
 
 export default function Home() {
+  const myRefs = useRef([])
+  myRefs.current = imgs.map((element, i) => myRefs.current[i] ?? createRef())
+
+  const [textures, setTextures] = useState<any>([])
+
+  const [loaded, setLoaded] = useState(false)
+
+  useEffect(() => {
+    onImageLoad()
+  }, [loaded])
+
+  const onImageLoad = () => {
+    const imgsSrc = Array.from(document.querySelectorAll(".project__img"))
+
+    imgsSrc.forEach((img) => {
+      setTextures((prev: any) => [...prev, img.getAttribute("src")])
+    })
+  }
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+    <section className={styles.home__hero__section}>
+      {imgs.map((img, i) => {
+        return (
+          <div key={i}>
+            <div className={styles.project__div}>
+              <Image
+                style={imgStyle}
+                src={img}
+                onLoad={() => setLoaded(true)}
+                alt={`project-${i}`}
+                className="project__img"
+                ref={myRefs.current[i]}
+              />
+              <h1 className={styles.title}>Project 2</h1>
+            </div>
+            {loaded && <Plane elRef={myRefs.current[i]} img={textures[i]} />}
+          </div>
+        )
+      })}
+    </section>
   )
 }
